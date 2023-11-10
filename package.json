@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "svelte-router": "^3.0.0-alpha.2",
+    "svelte-router-spa": "^7.0.1"
+  }
+}
