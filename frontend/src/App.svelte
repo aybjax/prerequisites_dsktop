@@ -1,25 +1,26 @@
 <div>
-  <Link to="/">Home</Link>
-  <Link to="/welcome">Welcome</Link>
   <div use:create></div>
 </div>
  
 <script>
-  import SvelteRouter, { Link } from 'svelte-router'
-  import Home from './pages/HomePage.svelte'
-  import Welcome from './pages/AboutPage.svelte'
+  import SvelteRouter, {  } from 'svelte-router'
+  import HomePage from './pages/ConnectionPage.svelte';
+  import GraphPage from './pages/GraphPage.svelte';
  
   function create (node) {
     const router = new SvelteRouter({
       target: node,
       mode: 'hash',
-      routes: [{
-        path: '/',
-        component: Home
-      }, {
-        path: '/welcome',
-        component: Welcome
-      }]
+      routes: [
+        {
+          path: '/graph',
+          component: GraphPage,
+        },
+        {
+          path: '/',
+          component: HomePage
+        },
+    ]
     })
  
     return {
@@ -31,18 +32,4 @@
 </script> 
  
 <style>
-  .router-link-active {
-    color: red;
-  }
-</style> 
-
-
-<!-- <script>
-  import { Router } from 'svelte-router-spa'
-  import { routes } from './routes'
-</script> -->
-
-<!-- <main>
-  <Router {routes} />
-  Hello
-</main> -->
+</style>
