@@ -3,7 +3,7 @@
 </div>
  
 <script>
-  import SvelteRouter, {  } from 'svelte-router'
+  import SvelteRouter from 'svelte-router'
   import HomePage from './pages/ConnectionPage.svelte';
   import GraphPage from './pages/GraphPage.svelte';
  

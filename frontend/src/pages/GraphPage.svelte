@@ -1,67 +1,94 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { GetEdgeList, GetLookUp } from "../../wailsjs/go/main/App";
-    import type {repo} from '../../wailsjs/go/models'
-    
-    let graph_container;
-    const graph_nodes = {};
-    let edgeList: {
-        [key: string]: repo.Edge[];
-    };
-    let lookUp: {
-        [key: string]: string;
-    };
+  import { onMount } from 'svelte';
+  import cytoscape from 'cytoscape';
+  import klay from 'cytoscape-klay';
+  cytoscape.use(klay)
+  let cy;
 
-    onMount(async () => {
-        const edgeListPromise = GetEdgeList();
-        const lookUpPromise = GetLookUp();
+  const draw = () => {
+    cy = cytoscape({container: document.getElementById('cy'),
 
-        edgeList = await edgeListPromise;
-        lookUp = await lookUpPromise;
+    boxSelectionEnabled: false,
+    autounselectify: true,
 
-        for(const key in lookUp) {
+    style: cytoscape.stylesheet()
+      .selector('node')
+        .style({
+          'content': 'data(id)',
+          'color': 'white',
+        })
+      .selector('edge')
+        .style({
+          'curve-style': 'bezier',
+          'target-arrow-shape': 'triangle',
+          'width': 4,
+          'line-color': '#ddd',
+          'target-arrow-color': '#ddd'
+        })
+      .selector('.highlighted')
+        .style({
+          'background-color': '#61bffc',
+          'line-color': '#61bffc',
+          'target-arrow-color': '#61bffc',
+          'transition-property': 'background-color, line-color, target-arrow-color',
+          'transition-duration': '0.5s'
+        }),
 
-        }
+    elements: {
+        nodes: [
+          { data: { id: 'a' } },
+          { data: { id: 'b' } },
+          { data: { id: 'c' } },
+          { data: { id: 'd' } },
+          { data: { id: 'e' } }
+        ],
 
-        
-        //@ts-ignore
-        let graphJSON = {
-        "nodes": ["mark", "higgs", "other", "etc"],
-        "edges": [
-            ["mark", "higgs"],
-            ["mark", "etc"],
-            ["mark", "other"]
+        edges: [
+          { data: { id: 'a"e', weight: 1, source: 'a', target: 'e' } },
+          { data: { id: 'ab', weight: 3, source: 'a', target: 'b' } },
+          { data: { id: 'be', weight: 4, source: 'b', target: 'e' } },
+          { data: { id: 'bc', weight: 5, source: 'b', target: 'c' } },
+          { data: { id: 'ce', weight: 6, source: 'c', target: 'e' } },
+          { data: { id: 'cd', weight: 2, source: 'c', target: 'd' } },
+          { data: { id: 'de', weight: 7, source: 'd', target: 'e' } }
         ]
-        };
-        
-        //@ts-ignore
-        let graph = new Springy.Graph();
-        graph.loadJSON(graphJSON);
-        //@ts-ignore
-        var layout = new Springy.Layout.ForceDirected(graph, 400.0, 400.0, 0.5);
-        //@ts-ignore
-        var renderer = new Springy.Renderer(layout,
-            function clear() {
-                // code to clear screen
-            },
-            function drawEdge(edge, p1, p2) {
-                // draw an edge
-            },
-            function drawNode(node, p) {
-                // draw a node
-            }
-        );
-        renderer.start();
-    })
+      },
+
+      layout: {
+        name: 'breadthfirst',
+        directed: true,
+        roots: '#a',
+        padding: 10
+      }
+    });
+    
+    //@ts-ignore
+    window.cy = cy
+    cy.center();
+    cy.mount();
+
+    document.querySelectorAll('canvas').forEach(cv => {
+        cv.style.width = '100%';
+        cv.style.height = '100%';
+        cv.style.left = '0px';
+        cv.style.top = '0px';
+      });
+    
+    cy.getElementById('a').addClass('highlighted')
+  }
+
+  onMount(draw)
 </script>
 
 <main>
-    <div>Hello</div>
-    <div>
-        {JSON.stringify(edgeList)}
-    </div>
-
-    <div bind:this={graph_container}></div>
+  <div id="cy" style="top:0px; left: 0px; height: 100vh; width: 100vw;"></div>
 </main>
 
-<style></style>
+<style lang="scss">
+  canvas {
+    top:0px !important;
+    left: 0px !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+</style> 
